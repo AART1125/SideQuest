@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mobicom.s18.toledo.aaronace.sidequest.pages.HomePage
 import com.mobicom.s18.toledo.aaronace.sidequest.pages.MapPage
@@ -38,7 +37,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         containerColor = Color.White,
         bottomBar = {
             NavigationBar (
@@ -87,7 +87,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
     when(selectedIndex) {
-        0 -> HomePage()
+        0 -> HomePage(quests = sampleQuests)
         1 -> MapPage()
         2 -> ProfilePage()
     }
