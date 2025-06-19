@@ -1,6 +1,6 @@
 local.properties
 /.idea
 /.gradle
-
-.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/
+.gra    dle/buildOutputCleanup/buildOutputCleanup.lock
 .gradle/8.11.1/executionHistory/executionHistory.lock
