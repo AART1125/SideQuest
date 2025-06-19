@@ -1,7 +1,12 @@
 package com.mobicom.s18.toledo.aaronace.sidequest
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -38,7 +43,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         containerColor = Color.White,
         bottomBar = {
             NavigationBar (
@@ -87,7 +93,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
     when(selectedIndex) {
-        0 -> HomePage()
+        0 -> HomePage(quests = sampleQuests)
         1 -> MapPage()
         2 -> ProfilePage()
     }

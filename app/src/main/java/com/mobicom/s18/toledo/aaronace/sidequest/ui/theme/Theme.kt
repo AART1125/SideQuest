@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme
+    package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme
 
 import android.app.Activity
 import android.os.Build
