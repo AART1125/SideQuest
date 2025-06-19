@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun LoginScreen(
-    onLoginClicked: () -> Unit = {},
+    onNavigateToMain: () -> Unit
 ) {
     // State for input fields
     var mobileNumber by rememberSaveable { mutableStateOf("+63") }
@@ -87,7 +87,7 @@ fun LoginScreen(
 
         // Login button
         Button(
-            onClick = { onLoginClicked() },
+            onClick = onNavigateToMain,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -104,5 +104,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(
+        onNavigateToMain = {}
+    )
 }

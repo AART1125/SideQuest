@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun LandingScreen() {
+fun LandingScreen(
+    onNavigateToLogin: () -> Unit
+) {
     val questGreen = Color(0xFF509A72)
 
     Box(
@@ -57,7 +59,7 @@ fun LandingScreen() {
         }
 
         Button(
-            onClick = { /* Handle button click here */ },
+            onClick = onNavigateToLogin,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 60.dp),
@@ -79,5 +81,7 @@ fun LandingScreen() {
 @Preview(showBackground = true)
 @Composable
 fun LandingScreenPreview() {
-    LandingScreen()
+    LandingScreen(
+        onNavigateToLogin = {}
+    )
 }
