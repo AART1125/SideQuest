@@ -40,7 +40,9 @@ android {
 }
 
 dependencies {
-
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.14")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
