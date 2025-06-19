@@ -38,21 +38,21 @@ fun LandingScreen() {
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 32.dp, top = 45.dp)
+                .padding(start = 32.dp, top = 20.dp)
         ) {
             Text(
                 text = "TIME TO\nGO ON A\nLITTLE",
                 color = Color.Black,
-                fontSize = 60.sp,
+                fontSize = 66.sp,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 62.sp
+                lineHeight = 64.sp
             )
             Text(
                 text = "SIDE\nQUEST",
                 color = questGreen,
-                fontSize = 60.sp,
+                fontSize = 66.sp,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 62.sp
+                lineHeight = 64.sp
             )
         }
 
@@ -69,7 +69,8 @@ fun LandingScreen() {
             Text(
                 text = "Let's Go!",
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                color = Color.White
             )
         }
     }

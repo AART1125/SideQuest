@@ -83,7 +83,7 @@ fun LoginScreen(
             },
             singleLine = true
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         // Login button
         Button(

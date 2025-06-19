@@ -128,7 +128,7 @@ fun SignupScreen(
             singleLine = true
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(40.dp))
 
         // Sign Up button
         Button(
