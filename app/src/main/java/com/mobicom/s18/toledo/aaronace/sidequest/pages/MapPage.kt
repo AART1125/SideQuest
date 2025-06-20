@@ -10,26 +10,34 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -46,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.intl.Locale
@@ -53,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -78,20 +88,27 @@ private lateinit var fusedLocationClient : FusedLocationProviderClient
 @Composable
 fun OpenMaps(
     modifier: Modifier = Modifier,
-    zoom: Double = 18.0,
+    zoom: Double = 20.0,
     stringLocation: String? = null,
-    onMapTap: (GeoPoint) -> Unit
+    onMapTap: (GeoPoint) -> Unit,
+    onDismissQuestPopup: () -> Unit
 ) {
 
     val permsState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var locationVar by remember { mutableStateOf(Location("manual").apply {
-        latitude = 14.5585560991
-        longitude = 120.989571042
+        latitude = 14.56476
+        longitude = 120.99384
     }) }
 
     var mapView: MapView? by remember { mutableStateOf(null) }
+
+    val customMarkerDesign = ResourcesCompat.getDrawable(
+        context.resources,
+        R.drawable.custom_marker,
+        null
+    )
 
     LaunchedEffect(Unit) {
         if (!permsState.status.isGranted) {
@@ -125,6 +142,7 @@ fun OpenMaps(
                     position = point
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     title = stringLocation
+                    icon = customMarkerDesign
                 }
 
                 Log.d("MapChecker", "Current Point: " + point.latitude.toString() + " : " + point.longitude.toString())
@@ -163,6 +181,7 @@ fun OpenMaps(
                     position = GeoPoint(locationVar.latitude, locationVar.longitude)
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     title = "Current Location"
+                    icon = customMarkerDesign
                 }
 
                 overlays.add(initmarker)
@@ -176,9 +195,11 @@ fun OpenMaps(
                                 position = p
                                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                 title = "Tapped: %.5f, %.5f".format(p.latitude, p.longitude)
+                                icon = customMarkerDesign
                             }
                             overlays.add(marker)
                             invalidate()
+                            onDismissQuestPopup()
                             onMapTap(p)
                         }
                         return true
@@ -197,12 +218,73 @@ fun OpenMaps(
 }
 
 
-@Preview(name = "MapPreview")
+@Composable
+fun QuestNotification(
+    modifier: Modifier = Modifier,
+    locationName : String,
+    questCount: Int = 3,
+    onViewDetailsClick: () -> Unit
+){
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.location_icon),
+                    contentDescription = "Location Icon",
+                    modifier = Modifier
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = locationName,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "$questCount Quests available",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFFFA500) // Orange color
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onViewDetailsClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2E7D32), // Green
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("View Details")
+            }
+        }
+    }
+
+}
+
+
+@Preview
 @Composable
 fun MapPage(modifier: Modifier = Modifier) {
     var searchText by remember { mutableStateOf("") }
     var submittedSearch by remember { mutableStateOf<String?>(null) }
     var tappedPoint by remember { mutableStateOf<GeoPoint?>(null) }
+    var showQuestNotification by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
@@ -211,7 +293,8 @@ fun MapPage(modifier: Modifier = Modifier) {
         OpenMaps(
             modifier = Modifier.matchParentSize(),
             stringLocation = submittedSearch,
-            onMapTap = { tappedPoint=it }
+            onMapTap = { tappedPoint = it },
+            onDismissQuestPopup = { showQuestNotification = false }
         )
 
         Column (
@@ -244,6 +327,21 @@ fun MapPage(modifier: Modifier = Modifier) {
             )
         }
 
+        if(showQuestNotification){
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = -(100).dp)
+            ) {
+                QuestNotification(
+                    locationName = "De La Salle University",
+                    onViewDetailsClick = {},
+                    modifier = Modifier
+                )
+            }
+        }
+
+
         tappedPoint?.let { point ->
             var titleInput = ""
             var detailInput = ""
@@ -274,7 +372,7 @@ fun MapPage(modifier: Modifier = Modifier) {
 
                         Text("Title: ", modifier = Modifier.padding(bottom = 5.dp))
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         TextField(
                             modifier = Modifier
