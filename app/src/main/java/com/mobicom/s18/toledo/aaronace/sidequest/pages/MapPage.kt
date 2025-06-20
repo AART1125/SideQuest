@@ -197,7 +197,7 @@ fun OpenMaps(
 }
 
 
-@Preview
+@Preview(name = "MapPreview")
 @Composable
 fun MapPage(modifier: Modifier = Modifier) {
     var searchText by remember { mutableStateOf("") }
