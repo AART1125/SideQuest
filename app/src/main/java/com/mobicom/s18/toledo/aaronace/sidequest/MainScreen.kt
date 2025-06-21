@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -88,7 +89,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
     when(selectedIndex) {
         0 -> HomePage(quests = sampleQuests)
-        1 -> MapPage()
+        1 -> {
+            var showRankUp by remember { mutableStateOf(false) }
+            if (showRankUp) {
+                RankUpScreen(onConfirm = { showRankUp = false })
+            } else {
+                MapPage(onShowRankUp = { showRankUp = true })
+            }
+        }
         2 -> ProfilePage()
     }
 }

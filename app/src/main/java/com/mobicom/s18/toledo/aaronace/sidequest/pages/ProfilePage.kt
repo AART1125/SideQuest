@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +39,8 @@ fun ProfilePage(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
+
         Image(
             painter = painterResource(R.drawable.profile_bg),
             contentDescription = "Background Image",
@@ -51,6 +57,26 @@ fun ProfilePage(modifier: Modifier = Modifier) {
                 .offset(y = -(90).dp)
         )
 
+        TextButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(y = 20.dp),
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.White // Change as needed
+            ),
+            onClick = {  }
+        ) {
+
+            Image(
+                painter = painterResource(R.drawable.exit_img),
+                contentDescription = null,
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text("Logout")
+        }
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,7 +86,7 @@ fun ProfilePage(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
             ) {
-                Text("Juan De La Cruz",
+                Text("Aaron Ace Toledo",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 10.dp),
@@ -78,8 +104,8 @@ fun ProfilePage(modifier: Modifier = Modifier) {
                         .height(8.dp))
                 HorizontalDivider(
                     modifier = Modifier
-                    .padding(10.dp)
-                    .align(Alignment.CenterHorizontally))
+                        .padding(10.dp)
+                        .align(Alignment.CenterHorizontally))
                 Spacer(
                     modifier = Modifier
                         .height(16.dp))

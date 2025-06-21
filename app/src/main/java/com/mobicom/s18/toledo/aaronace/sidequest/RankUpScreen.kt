@@ -24,12 +24,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Preview
 @Composable
-fun RankUpScreen () {
+fun RankUpScreen (onConfirm: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -63,8 +63,6 @@ fun RankUpScreen () {
                 }
             }
 
-
-
             Image(
                 painter = painterResource(R.drawable.static_rank_up),
                 contentDescription = null,
@@ -77,10 +75,10 @@ fun RankUpScreen () {
 
         // Put the Button outside the Column so we can align it to the bottom
         Button(
-            onClick = {},
+            onClick = onConfirm,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = -(40).dp)
+                .offset(y = -(100).dp)
                 .fillMaxWidth()
                 .padding(8.dp),
             colors = ButtonDefaults.buttonColors(

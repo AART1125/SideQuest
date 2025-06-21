@@ -71,6 +71,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.RankUpScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
@@ -166,6 +167,7 @@ fun OpenMaps(
         modifier = modifier,
         factory = {
             val pref = context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
+
             getInstance().load(context, pref)
             getInstance().userAgentValue = context.packageName
 
@@ -174,6 +176,7 @@ fun OpenMaps(
                 setZoomRounding(true)
                 setMultiTouchControls(true)
                 controller.setZoom(zoom)
+                controller.setCenter(GeoPoint(14.56476, 120.99384))
 
                 mapView = this
 
@@ -277,14 +280,17 @@ fun QuestNotification(
 
 }
 
-
-@Preview
 @Composable
-fun MapPage(modifier: Modifier = Modifier) {
+fun MapPage(
+    modifier: Modifier = Modifier,
+    onShowRankUp: () -> Unit
+) {
     var searchText by remember { mutableStateOf("") }
     var submittedSearch by remember { mutableStateOf<String?>(null) }
     var tappedPoint by remember { mutableStateOf<GeoPoint?>(null) }
     var showQuestNotification by remember { mutableStateOf(true) }
+
+
 
     Box(
         modifier = Modifier
@@ -312,7 +318,7 @@ fun MapPage(modifier: Modifier = Modifier) {
                     unfocusedContainerColor = Color.White,
                     focusedTextColor = Color.Black,
                     unfocusedLabelColor = Color.LightGray,
-                    focusedContainerColor = Color.White
+                    focusedContainerColor = Color.White,
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -414,7 +420,7 @@ fun MapPage(modifier: Modifier = Modifier) {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
-                            onClick = { tappedPoint = null },
+                            onClick = onShowRankUp,
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .fillMaxWidth(),
