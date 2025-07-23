@@ -1,7 +1,6 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.pages
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
 import android.location.Location
@@ -23,25 +22,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,24 +49,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.Task
 import com.mobicom.s18.toledo.aaronace.sidequest.R
-import com.mobicom.s18.toledo.aaronace.sidequest.RankUpScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.osmdroid.config.Configuration
 import org.osmdroid.config.Configuration.*
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -82,6 +68,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.MapViewModel
 
 private lateinit var fusedLocationClient : FusedLocationProviderClient
 
@@ -94,7 +82,6 @@ fun OpenMaps(
     onMapTap: (GeoPoint) -> Unit,
     onDismissQuestPopup: () -> Unit
 ) {
-
     val permsState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -283,24 +270,22 @@ fun QuestNotification(
 @Composable
 fun MapPage(
     modifier: Modifier = Modifier,
-    onShowRankUp: () -> Unit
+    onShowRankUp: () -> Unit,
+    viewModel: MapViewModel = viewModel()
 ) {
-    var searchText by remember { mutableStateOf("") }
-    var submittedSearch by remember { mutableStateOf<String?>(null) }
-    var tappedPoint by remember { mutableStateOf<GeoPoint?>(null) }
-    var showQuestNotification by remember { mutableStateOf(true) }
+    val searchText by viewModel.searchText
+    val submittedSearch by viewModel.submittedSearch
+    val tappedPoint by viewModel.tappedPoint
+    val showQuestNotification by viewModel.showQuestNotification
+    val newQuestTitle by viewModel.newQuestTitle
+    val newQuestDetails by viewModel.newQuestDetails
 
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         OpenMaps(
             modifier = Modifier.matchParentSize(),
             stringLocation = submittedSearch,
-            onMapTap = { tappedPoint = it },
-            onDismissQuestPopup = { showQuestNotification = false }
+            onMapTap = viewModel::onMapTap,
+            onDismissQuestPopup = viewModel::dismissQuestPopup
         )
 
         Column (
@@ -311,7 +296,7 @@ fun MapPage(
         ) {
             TextField(
                 value = searchText,
-                onValueChange = { searchText = it },
+                onValueChange = viewModel::updateSearchText,
                 label = { Text("Search Location") },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -326,9 +311,7 @@ fun MapPage(
                     .clip(RoundedCornerShape(50))
                     .border(1.dp, Color.Black, RoundedCornerShape(50)),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = {
-                    submittedSearch = searchText
-                }
+                keyboardActions = KeyboardActions(onSearch = { viewModel.submitSearch() }
                 )
             )
         }
@@ -349,9 +332,6 @@ fun MapPage(
 
 
         tappedPoint?.let { point ->
-            var titleInput = ""
-            var detailInput = ""
-
             AnimatedVisibility(
                 visible = tappedPoint != null,
                 enter = slideInVertically (
@@ -385,8 +365,8 @@ fun MapPage(
                                 .fillMaxWidth()
                                 .padding(end = 20.dp)
                                 .border(1.dp, Color.Black, RoundedCornerShape(10)),
-                            value = titleInput,
-                            onValueChange = { titleInput = it },
+                            value = newQuestTitle,
+                            onValueChange = viewModel::updateNewQuestTitle,
                             label = { Text("Enter Title") },
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.White,
@@ -408,8 +388,8 @@ fun MapPage(
                                 .padding(end = 20.dp)
                                 .border(1.dp, Color.Black, RoundedCornerShape(10))
                                 .height(100.dp),
-                            value = detailInput,
-                            onValueChange = { detailInput = it },
+                            value = newQuestDetails,
+                            onValueChange = viewModel::updateNewQuestDetails,
                             label = { Text("Enter Details") },
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.White,
@@ -419,14 +399,21 @@ fun MapPage(
                             ),
                         )
                         Spacer(modifier = Modifier.height(8.dp))
+
                         Button(
-                            onClick = onShowRankUp,
+                            onClick = {
+                                if (viewModel.canCreateQuest()) {
+                                    viewModel.resetQuestCreation()
+                                    onShowRankUp()
+                                }
+                            },
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 Color(0xFF509A72)
-                            )
+                            ),
+                            enabled = viewModel.canCreateQuest()
                         ) {
                             Text("Confirm")
                         }

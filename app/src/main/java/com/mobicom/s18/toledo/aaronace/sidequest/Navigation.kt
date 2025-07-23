@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mobicom.s18.toledo.aaronace.sidequest.screens.LandingScreen
+import com.mobicom.s18.toledo.aaronace.sidequest.screens.LoginScreen
+import com.mobicom.s18.toledo.aaronace.sidequest.screens.MainScreen
 
 @Composable
 fun AppNavigation() {

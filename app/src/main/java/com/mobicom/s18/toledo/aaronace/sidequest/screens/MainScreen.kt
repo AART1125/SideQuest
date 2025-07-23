@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,9 +20,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.mobicom.s18.toledo.aaronace.sidequest.pages.HomePage
-import com.mobicom.s18.toledo.aaronace.sidequest.pages.MapPage
-import com.mobicom.s18.toledo.aaronace.sidequest.pages.ProfilePage
+import com.mobicom.s18.toledo.aaronace.sidequest.data.models.NavItem
+import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {

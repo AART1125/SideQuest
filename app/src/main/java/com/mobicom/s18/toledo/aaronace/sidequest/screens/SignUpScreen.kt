@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,23 +22,23 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.AuthViewModel
 
 @Composable
 fun SignupScreen(
     onLoginClicked: () -> Unit = {},
-    onSignUpClicked: () -> Unit = {}
+    onSignUpClicked: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel()
 ) {
-    // State for input fields
-    var username by rememberSaveable { mutableStateOf("") }
-    var mobileNumber by rememberSaveable { mutableStateOf("+63") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
-
-    // State for password visibility
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
-
     val questGreen = Color(0xFF509A72)
+
+    val username by viewModel.username
+    val mobileNumber by viewModel.mobileNumber
+    val password by viewModel.password
+    val confirmPassword by viewModel.confirmPassword
+    val passwordVisible by viewModel.passwordVisible
+    val confirmPasswordVisible by viewModel.confirmPasswordVisible
 
     Column(
         modifier = Modifier
@@ -64,7 +64,7 @@ fun SignupScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
+            onValueChange = viewModel::updateUsername,
             placeholder = { Text("Enter username") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -77,7 +77,7 @@ fun SignupScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = mobileNumber,
-            onValueChange = { mobileNumber = it },
+            onValueChange = viewModel::updateMobileNumber,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -90,7 +90,7 @@ fun SignupScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = viewModel::updatePassword,
             placeholder = { Text("Enter password") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -99,7 +99,7 @@ fun SignupScreen(
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) "Hide password" else "Show password"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = viewModel::togglePasswordVisibility) {
                     Icon(imageVector = image, contentDescription = description)
                 }
             },
@@ -112,7 +112,7 @@ fun SignupScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            onValueChange = viewModel::updateConfirmPassword,
             placeholder = { Text("Confirm password") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -121,7 +121,7 @@ fun SignupScreen(
             trailingIcon = {
                 val image = if (confirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (confirmPasswordVisible) "Hide password" else "Show password"
-                IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                IconButton(onClick = viewModel::toggleConfirmPasswordVisibility) {
                     Icon(imageVector = image, contentDescription = description)
                 }
             },
@@ -132,7 +132,11 @@ fun SignupScreen(
 
         // Sign Up button
         Button(
-            onClick = { onSignUpClicked() },
+            onClick = {
+                if (viewModel.canSignUp()) {
+                    onSignUpClicked()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

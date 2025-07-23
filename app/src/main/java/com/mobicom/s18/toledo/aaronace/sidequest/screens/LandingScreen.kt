@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mobicom.s18.toledo.aaronace.sidequest.R
 
 @Composable
 fun LandingScreen(

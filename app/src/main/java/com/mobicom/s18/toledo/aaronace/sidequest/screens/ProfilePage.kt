@@ -1,10 +1,8 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.pages
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,16 +29,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.ProfileViewModel
 
 @Preview
 @Composable
-fun ProfilePage(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+fun ProfilePage(
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = viewModel()
+) {
 
+    val username by viewModel.username
+    val userRank by viewModel.userRank
+    val completedQuests by viewModel.completedQuests
 
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(R.drawable.profile_bg),
             contentDescription = "Background Image",
@@ -86,7 +90,7 @@ fun ProfilePage(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
             ) {
-                Text("Aaron Ace Toledo",
+                Text("Aaron Ace Toledo", // change to "username"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 10.dp),
@@ -96,7 +100,7 @@ fun ProfilePage(modifier: Modifier = Modifier) {
                 Spacer(
                     modifier = Modifier
                     .height(16.dp))
-                Text("Project Manager",
+                Text("Project Manager", // change to "userRank"
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontSize = 20.sp)
                 Spacer(
@@ -109,13 +113,13 @@ fun ProfilePage(modifier: Modifier = Modifier) {
                 Spacer(
                     modifier = Modifier
                         .height(16.dp))
-                Text("50",
+                Text("50", // change to "$completedQuests"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     fontSize = 100.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF52B788))
-                Text("Task Completed",
+                Text("Quests Completed",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     fontSize = 20.sp)

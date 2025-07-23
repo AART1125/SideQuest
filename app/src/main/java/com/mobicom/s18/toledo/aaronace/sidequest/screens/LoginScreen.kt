@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,19 +18,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.AuthViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun LoginScreen(
-    onNavigateToMain: () -> Unit
+    onNavigateToMain: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
 ) {
-    // State for input fields
-    var mobileNumber by rememberSaveable { mutableStateOf("+63") }
-    var password by rememberSaveable { mutableStateOf("") }
-
-    // State for password visibility
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-
     val questGreen = Color(0xFF509A72)
+
+    val mobileNumber by viewModel.mobileNumber
+    val password by viewModel.password
+    val passwordVisible by viewModel.passwordVisible
 
     Column(
         modifier = Modifier
@@ -51,7 +51,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = mobileNumber,
-            onValueChange = { mobileNumber = it },
+            onValueChange = viewModel::updateMobileNumber,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -64,7 +64,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = viewModel::updatePassword,
             placeholder = { Text("Enter password") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -73,7 +73,7 @@ fun LoginScreen(
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) "Hide password" else "Show password"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = viewModel::togglePasswordVisibility) {
                     Icon(imageVector = image, contentDescription = description)
                 }
             },
@@ -83,12 +83,17 @@ fun LoginScreen(
 
         // Login button
         Button(
-            onClick = onNavigateToMain,
+            onClick = {
+                if (viewModel.canLogin()) {
+                    onNavigateToMain()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(containerColor = questGreen)
+            colors = ButtonDefaults.buttonColors(containerColor = questGreen),
+            enabled = viewModel.canLogin()
         ) {
             Text("Login", fontSize = 18.sp, color = Color.White)
         }

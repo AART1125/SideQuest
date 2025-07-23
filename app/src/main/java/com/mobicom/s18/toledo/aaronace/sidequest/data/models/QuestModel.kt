@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.data.models
 
 data class QuestModel(
     val id: Int,

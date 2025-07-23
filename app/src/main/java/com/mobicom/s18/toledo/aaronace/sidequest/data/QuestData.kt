@@ -1,4 +1,6 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.data
+
+import com.mobicom.s18.toledo.aaronace.sidequest.data.models.QuestModel
 
 val sampleQuests = listOf(
     QuestModel(

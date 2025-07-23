@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.pages
+package com.mobicom.s18.toledo.aaronace.sidequest.screens
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -33,11 +33,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,10 +43,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mobicom.s18.toledo.aaronace.sidequest.QuestModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
-import com.mobicom.s18.toledo.aaronace.sidequest.sampleQuests
+import com.mobicom.s18.toledo.aaronace.sidequest.data.models.QuestModel
+import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
+import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -58,15 +56,15 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(quests: List<QuestModel>) {
+fun HomePage(
+    quests: List<QuestModel> = sampleQuests,
+    viewModel: HomeViewModel = viewModel()
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    var selectedQuest by remember {
-        mutableStateOf<QuestModel?>(null)
-    }
-    val questList = remember {
-        quests.toMutableStateList()
-    }
+
+    val activeQuests = viewModel.getActiveQuests()
+    val selectedQuest by viewModel.selectedQuest
 
     Column(
         modifier = Modifier
@@ -108,22 +106,17 @@ fun HomePage(quests: List<QuestModel>) {
         }
         LazyColumn {
             item {
-                Spacer(modifier = Modifier
-                    .padding(top = 24.dp)
-                )
+                Spacer(modifier = Modifier.padding(top = 24.dp))
             }
             items(
-                items = questList.filter { !it.isCompleted },
+                items = activeQuests,
                 key = { it.id }
             ) { quest ->
                 SwipeToDelete(
                     quest = quest,
-                    onRemove = { questList.remove(quest) },
+                    onRemove = { viewModel.deleteQuest(quest) },
                     modifier = Modifier.animateItem(tween(200)),
-                    onClick = {
-                        selectedQuest = quest
-                        scope.launch { sheetState.show() }
-                    }
+                    onClick = { viewModel.selectQuest(quest)}
                 )
                 Spacer(modifier = Modifier.size(16.dp))
             }
@@ -133,32 +126,16 @@ fun HomePage(quests: List<QuestModel>) {
         }
     }
 
-    if (selectedQuest != null) {
+    // Bottom Sheet
+    selectedQuest?.let { quest ->
         ModalBottomSheet(
-            onDismissRequest = {
-                scope.launch {
-                    sheetState.hide()
-                }.invokeOnCompletion {
-                    selectedQuest = null
-                }
-            },
+            onDismissRequest = { viewModel.selectQuest(null) },
             sheetState = sheetState,
         ) {
             // Sheet content
             QuestBottomSheet(
-                quest = selectedQuest!!,
-                onComplete = {
-                    val index = questList.indexOfFirst { it.id == selectedQuest!!.id }
-                    if(index != -1) {
-                        questList[index] = questList[index].copy(isCompleted = true)
-                    }
-
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        selectedQuest = null
-                    }
-                }
+                quest = quest,
+                onComplete = { viewModel.completeQuest(quest) }
             )
         }
     }
