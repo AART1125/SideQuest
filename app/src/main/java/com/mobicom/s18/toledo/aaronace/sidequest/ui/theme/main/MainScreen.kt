@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.screens
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,9 +20,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.mobicom.s18.toledo.aaronace.sidequest.data.models.NavItem
+import com.mobicom.s18.toledo.aaronace.sidequest.navigation.NavItem
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home.HomePage
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map.MapPage
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {

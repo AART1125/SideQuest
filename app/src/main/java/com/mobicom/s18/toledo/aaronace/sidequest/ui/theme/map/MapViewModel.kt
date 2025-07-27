@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.viewmodels
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State

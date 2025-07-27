@@ -72,4 +72,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-analytics")
+
+    // Phone authentication
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

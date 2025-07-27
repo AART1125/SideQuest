@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.screens
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map
 
 import android.Manifest
 import android.content.Context
@@ -69,7 +69,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.MapViewModel
 
 private lateinit var fusedLocationClient : FusedLocationProviderClient
 

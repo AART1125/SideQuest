@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.screens
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.landing
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

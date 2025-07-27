@@ -1,9 +1,9 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.viewmodels
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
-import com.mobicom.s18.toledo.aaronace.sidequest.data.models.QuestModel
+import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 
 class HomeViewModel : ViewModel() {

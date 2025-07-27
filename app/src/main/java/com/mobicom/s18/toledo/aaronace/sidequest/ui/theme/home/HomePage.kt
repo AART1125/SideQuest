@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.screens
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -45,10 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
-import com.mobicom.s18.toledo.aaronace.sidequest.data.models.QuestModel
+import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
-import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds

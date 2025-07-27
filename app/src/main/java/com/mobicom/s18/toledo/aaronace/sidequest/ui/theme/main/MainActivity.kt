@@ -1,9 +1,10 @@
-package com.mobicom.s18.toledo.aaronace.sidequest
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.mobicom.s18.toledo.aaronace.sidequest.navigation.AppNavigation
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.SideQuestTheme
 
 class MainActivity : ComponentActivity() {
