@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1081321817353",
+    "project_id": "sidequest-adbaa",
+    "storage_bucket": "sidequest-adbaa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1081321817353:android:4692293f27d8adaed53fd8",
+        "android_client_info": {
+          "package_name": "com.mobicom.s18.toledo.aaronace.sidequest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPCPlxkNwwEPKWVZ2MnLS-NeGKbeucMQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
