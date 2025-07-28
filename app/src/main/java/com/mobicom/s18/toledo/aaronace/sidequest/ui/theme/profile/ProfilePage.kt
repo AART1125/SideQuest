@@ -1,4 +1,4 @@
-package com.mobicom.s18.toledo.aaronace.sidequest.screens
+package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
-import com.mobicom.s18.toledo.aaronace.sidequest.viewmodels.ProfileViewModel
 
 @Preview
 @Composable
