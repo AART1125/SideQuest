@@ -13,11 +13,11 @@ class ProfileViewModel : ViewModel() {
     val userRank: State<String> = _userRank
 
     private val _completedQuests= mutableStateOf(
-        sampleQuests.count { it.isCompleted }
+        sampleQuests.count { it.completed }
     )
     val completedQuests: State<Int> = _completedQuests
 
     fun updateCompletedQuests() {
-        _completedQuests.value = sampleQuests.count { it.isCompleted }
+        _completedQuests.value = sampleQuests.count { it.completed }
     }
 }

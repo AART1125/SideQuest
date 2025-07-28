@@ -19,19 +19,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -46,29 +57,31 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
-import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
+import com.mobicom.s18.toledo.aaronace.sidequest.model.toDateString
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import kotlin.time.Duration.Companion.seconds
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(
-    quests: List<QuestModel> = sampleQuests,
-    viewModel: HomeViewModel = viewModel()
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
+fun HomePage(viewModel: HomeViewModel = viewModel()) {
 
-    val activeQuests = viewModel.getActiveQuests()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val quests by viewModel.quests.collectAsState()
+    val isLoading by viewModel.isLoading
     val selectedQuest by viewModel.selectedQuest
+
+    val selectedTab by viewModel.selectedTab
+    val currentTabQuests = viewModel.getCurrentTabQuests()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(vertical = 24.dp)
             .background(Color.White),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
@@ -76,6 +89,7 @@ fun HomePage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 24.dp)
                 .padding(bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -95,35 +109,105 @@ fun HomePage(
                     color = Color(0xFF40916C)
                 )
             }
-            Icon(
+            /*Icon(
                 painter = painterResource(R.drawable.filter),
                 contentDescription = "Filter",
                 tint = Color.Black,
                 modifier = Modifier
                     .size(24.dp)
+            )*/
+        }
+
+        // Active and Completed quests tabs
+        TabRow(
+            selectedTabIndex = selectedTab,
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = Color.White,
+            indicator = { tabPositions ->
+                if (selectedTab < tabPositions.size) {
+                    SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                        color = Color(0xFF40916C)
+                    )
+                }
+            }
+        ) {
+            Tab(
+                selected = selectedTab == 0,
+                onClick = { viewModel.selectedTab(0) },
+                text = {
+                    Text(
+                        text = "Active",
+                        fontFamily = fontFamily,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (selectedTab == 0) Color(0xFF40916C) else Color.Gray
+                    )
+                }
+            )
+            Tab(
+                selected = selectedTab == 1,
+                onClick = { viewModel.selectedTab(1) },
+                text = {
+                    Text(
+                        text = "Completed",
+                        fontFamily = fontFamily,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (selectedTab == 1) Color(0xFF40916C) else Color.Gray
+                    )
+                }
             )
         }
-        LazyColumn {
-            item {
-                Spacer(modifier = Modifier.padding(top = 24.dp))
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-            items(
-                items = activeQuests,
-                key = { it.id }
-            ) { quest ->
-                SwipeToDelete(
-                    quest = quest,
-                    onRemove = { viewModel.deleteQuest(quest) },
-                    modifier = Modifier.animateItem(tween(200)),
-                    onClick = { viewModel.selectQuest(quest)}
-                )
-                Spacer(modifier = Modifier.size(16.dp))
+        } else {
+            if (currentTabQuests.isEmpty()) {
+                // No quests
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (selectedTab == 0) "No active quests available" else "No completed quests yet",
+                        fontFamily = fontFamily,
+                        fontSize = 16.sp,
+                        color = Color(0xFF71727A)
+                    )
+                }
+            } else {
+                // Display quests for current tab
+                LazyColumn (modifier = Modifier.padding(horizontal = 24.dp)) {
+                    item {
+                        Spacer(modifier = Modifier.padding(top = 24.dp))
+                    }
+                    items(
+                        items = currentTabQuests,
+                        key = { it.id }
+                    ) { quest ->
+                        SwipeToDelete(
+                            quest = quest,
+                            onRemove = { },
+                            modifier = Modifier.animateItem(tween(200)),
+                            onClick = { viewModel.selectQuest(quest)}
+                        )
+                        Spacer(modifier = Modifier.size(16.dp))
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
+                    }
+                }
             }
-            item {
-                Spacer(modifier = Modifier.height(72.dp))
-            }
+
         }
     }
+
 
     // Bottom Sheet
     selectedQuest?.let { quest ->
@@ -138,12 +222,6 @@ fun HomePage(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun HomePreview() {
-    HomePage(quests = sampleQuests)
 }
 
 @Composable
@@ -172,7 +250,10 @@ fun QuestCard(
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .background(Color(0xFFF9A620))
+                    // Adjust color bar based on completion status
+                    .background(
+                        if (quest.completed) Color(0xFF40916C) else Color(0xFFF9A620)
+                    )
             )
             Column(
                 modifier = Modifier
@@ -223,6 +304,7 @@ fun QuestCard(
     }
 }
 
+// Bottom Sheet
 @Composable
 fun QuestBottomSheet(
     quest: QuestModel,
@@ -271,26 +353,54 @@ fun QuestBottomSheet(
             modifier = Modifier
                 .padding(top = 6.dp)
         )
+
+        // Show date of completion if quest is completed
+        if (quest.completed) {
+            Row {
+                Text(
+                    text = "Completed on: ",
+                    fontFamily = fontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF40916C),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                )
+                Text(
+                    text = quest.completedAt.toDateString(),
+                    fontFamily = fontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF71727A),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                )
+            }
+        }
         Spacer(
             modifier = Modifier
                 .weight(1f)
         )
-        Button(
-            onClick = onComplete,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF40916C)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Complete Quest",
-                fontFamily = fontFamily,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
+
+        // Show complete button only if quest is not completed
+        if (!quest.completed) {
+            Button(
+                onClick = onComplete,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF40916C)
+                ),
                 modifier = Modifier
-                    .padding(8.dp)
-            )
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Complete Quest",
+                    fontFamily = fontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
+            }
         }
     }
 }

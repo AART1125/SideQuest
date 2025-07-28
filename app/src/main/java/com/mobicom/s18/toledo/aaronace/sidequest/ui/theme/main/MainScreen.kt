@@ -2,6 +2,9 @@ package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,10 +23,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.navigation.NavItem
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home.HomePage
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home.HomeViewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map.MapPage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
@@ -37,14 +42,30 @@ fun MainScreen(modifier: Modifier = Modifier) {
         NavItem("Profile", painterResource(R.drawable.profile_inactive)),
     )
 
-    var selectedIndex by remember {
-        mutableIntStateOf(0)
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
+    var showCreateQuestSheet by remember { mutableStateOf(false) }
+
+    fun handleCreateQuestClick() {
+        selectedIndex = 1 // Navigate to Map screen
+        showCreateQuestSheet = true
     }
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         containerColor = Color.White,
+        floatingActionButton = {
+            if (selectedIndex == 0) {
+                FloatingActionButton(
+                    onClick = { handleCreateQuestClick() },
+                    containerColor = Color(0xFF40916C),
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Filled.Add, "Create Quest")
+                }
+            }
+        },
         bottomBar = {
             NavigationBar (
                 modifier = Modifier.drawBehind {
@@ -85,20 +106,37 @@ fun MainScreen(modifier: Modifier = Modifier) {
             }
         }
     ) { innerPadding ->
-        ContentScreen(modifier = Modifier.padding(innerPadding), selectedIndex)
+        ContentScreen(
+            modifier = Modifier.padding(innerPadding),
+            selectedIndex = selectedIndex,
+            showCreateQuestSheet = showCreateQuestSheet,
+            onDismissCreateQuest = { showCreateQuestSheet = false }
+        )
     }
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
+fun ContentScreen(
+    modifier: Modifier = Modifier,
+    selectedIndex: Int,
+    showCreateQuestSheet: Boolean,
+    onDismissCreateQuest: () -> Unit
+) {
     when(selectedIndex) {
-        0 -> HomePage(quests = sampleQuests)
+        0 -> {
+            val viewModel: HomeViewModel = viewModel()
+            HomePage(viewModel = viewModel)
+        }
         1 -> {
             var showRankUp by remember { mutableStateOf(false) }
             if (showRankUp) {
                 RankUpScreen(onConfirm = { showRankUp = false })
             } else {
-                MapPage(onShowRankUp = { showRankUp = true })
+                MapPage(
+                    onShowRankUp = { showRankUp = true },
+                    showCreateQuestSheet = showCreateQuestSheet,
+                    onDismissCreateQuest = onDismissCreateQuest
+                )
             }
         }
         2 -> ProfilePage()
