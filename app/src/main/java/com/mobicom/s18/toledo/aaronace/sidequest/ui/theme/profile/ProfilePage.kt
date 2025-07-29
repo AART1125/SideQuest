@@ -1,5 +1,6 @@
 package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile
 
+import android.app.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 
@@ -36,12 +42,14 @@ import com.mobicom.s18.toledo.aaronace.sidequest.R
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(),
+    onLogout: () -> Unit
 ) {
 
     val username by viewModel.username
     val userRank by viewModel.userRank
     val completedQuests by viewModel.completedQuests
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -68,7 +76,7 @@ fun ProfilePage(
                 containerColor = Color.Transparent,
                 contentColor = Color.White // Change as needed
             ),
-            onClick = {  }
+            onClick = { showLogoutDialog = true }
         ) {
 
             Image(
@@ -79,6 +87,39 @@ fun ProfilePage(
             Spacer(modifier = Modifier.width(5.dp))
             Text("Logout")
         }
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = { Text("Confirm Logout") },
+                text = { Text("Are you sure you want to logout?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showLogoutDialog = false
+                            onLogout()
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF509A72),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showLogoutDialog = false },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("No")
+                    }
+                }
+            )
+        }
+
 
         Surface(
             modifier = Modifier
@@ -128,5 +169,7 @@ fun ProfilePage(
                 )
             }
         }
+
     }
 }
+

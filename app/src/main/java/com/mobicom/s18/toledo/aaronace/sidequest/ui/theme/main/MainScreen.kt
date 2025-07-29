@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.mobicom.s18.toledo.aaronace.sidequest.navigation.NavItem
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
@@ -34,7 +35,7 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier, onLogout: () -> Unit) {
 
     val navItemList = listOf(
         NavItem("Home", painterResource(R.drawable.home_inactive)),
@@ -110,7 +111,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
             showCreateQuestSheet = showCreateQuestSheet,
-            onDismissCreateQuest = { showCreateQuestSheet = false }
+            onDismissCreateQuest = { showCreateQuestSheet = false },
+            onLogout = onLogout
         )
     }
 }
@@ -120,7 +122,8 @@ fun ContentScreen(
     modifier: Modifier = Modifier,
     selectedIndex: Int,
     showCreateQuestSheet: Boolean,
-    onDismissCreateQuest: () -> Unit
+    onDismissCreateQuest: () -> Unit,
+    onLogout: () -> Unit
 ) {
     when(selectedIndex) {
         0 -> {
@@ -139,6 +142,6 @@ fun ContentScreen(
                 )
             }
         }
-        2 -> ProfilePage()
+        2 -> ProfilePage(onLogout = onLogout)
     }
 }

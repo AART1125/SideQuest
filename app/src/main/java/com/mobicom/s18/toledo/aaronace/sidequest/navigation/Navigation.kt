@@ -8,6 +8,7 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.landing.LandingScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.LoginScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.SignupScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.main.MainScreen
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
 
 @Composable
 fun AppNavigation() {
@@ -59,7 +60,16 @@ fun AppNavigation() {
             )
         }
         composable("main") {
-            MainScreen()
+            MainScreen(
+                onLogout = {
+                    navController.navigate("landing") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
     }
 }
