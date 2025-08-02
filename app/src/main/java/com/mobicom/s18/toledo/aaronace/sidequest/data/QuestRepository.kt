@@ -71,4 +71,16 @@ class QuestRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun deleteQuest(questId: String): Result<Unit> {
+        return try {
+            firestore.collection("quests")
+                .document(questId)
+                .delete()
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

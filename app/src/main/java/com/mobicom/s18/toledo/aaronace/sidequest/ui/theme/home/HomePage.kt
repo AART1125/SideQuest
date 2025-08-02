@@ -63,6 +63,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import kotlin.time.Duration.Companion.seconds
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,12 +79,21 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val quests by viewModel.quests.collectAsState()
+    //val quests by viewModel.quests.collectAsState()
+    val quests by viewModel.questsState
     val isLoading by viewModel.isLoading
     val selectedQuest by viewModel.selectedQuest
 
     val selectedTab by viewModel.selectedTab
-    val currentTabQuests = viewModel.getCurrentTabQuests()
+    val currentTabQuests = when (selectedTab) {
+        0 -> quests.filter { !it.completed }
+        1 -> quests.filter { it.completed }
+        else -> emptyList()
+    }
+
+    // State for confirmation and undo
+    val (pendingDeleteQuest, setPendingDeleteQuest) = remember { mutableStateOf<QuestModel?>(null) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -193,7 +210,7 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
                     ) { quest ->
                         SwipeToDelete(
                             quest = quest,
-                            onRemove = { },
+                            onRemove = {setPendingDeleteQuest(quest)},
                             modifier = Modifier.animateItem(tween(200)),
                             onClick = { viewModel.selectQuest(quest)}
                         )
@@ -208,6 +225,24 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
         }
     }
 
+    // Confirmation dialog
+    pendingDeleteQuest?.let { quest ->
+        AlertDialog(
+            onDismissRequest = { setPendingDeleteQuest(null) },
+            title = { Text("Delete Quest") },
+            text = { Text("Are you sure you want to delete this quest?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    setPendingDeleteQuest(null)
+                    viewModel.deleteQuest(quest)
+                    Toast.makeText(context, "Quest deleted", Toast.LENGTH_SHORT).show()
+                }) { Text("Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { setPendingDeleteQuest(null) }) { Text("Cancel") }
+            }
+        )
+    }
 
     // Bottom Sheet
     selectedQuest?.let { quest ->

@@ -39,16 +39,31 @@ class HomeViewModel (
     private val _selectedTab = mutableStateOf(0)
     val selectedTab: State<Int> = _selectedTab
 
+    private val _quests = mutableStateOf<List<QuestModel>>(emptyList())
+    val questsState: State<List<QuestModel>> = _quests
+
+    // Keep collecting from repository to stay in sync
+    init {
+        viewModelScope.launch {
+            questRepository.getUserQuests(currentUserId)
+                .onEach { questsFromRepo ->
+                    _isLoading.value = false
+                    _quests.value = questsFromRepo
+                }
+                .collect { }
+        }
+    }
+
     fun selectedTab(tabIndex: Int) {
         _selectedTab.value = tabIndex
     }
 
     fun getActiveQuests(): List<QuestModel> {
-        return quests.value.filter { !it.completed }
+        return _quests.value.filter { !it.completed }
     }
 
     fun getCompletedQuests(): List<QuestModel> {
-        return quests.value.filter { it.completed }
+        return _quests.value.filter { it.completed }
     }
 
     fun getCurrentTabQuests(): List<QuestModel> {
@@ -68,5 +83,12 @@ class HomeViewModel (
 
     fun selectQuest(quest: QuestModel?) {
         _selectedQuest.value = quest
+    }
+
+    fun deleteQuest(quest: QuestModel) {
+        viewModelScope.launch {
+            _quests.value = _quests.value.filter { it.id != quest.id }
+            questRepository.deleteQuest(quest.id)
+        }
     }
 }
