@@ -232,18 +232,29 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
             title = { Text("Delete Quest") },
             text = { Text("Are you sure you want to delete this quest?") },
             confirmButton = {
-                TextButton(onClick = {
-                    setPendingDeleteQuest(null)
-                    viewModel.deleteQuest(quest)
-                    Toast.makeText(context, "Quest deleted", Toast.LENGTH_SHORT).show()
-                }) { Text("Delete") }
+                TextButton(
+                    onClick = {
+                        setPendingDeleteQuest(null)
+                        viewModel.deleteQuest(quest)
+                        Toast.makeText(context, "Quest deleted", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF509A72),
+                        contentColor = Color.White
+                    )
+                ) { Text("Delete") }
             },
             dismissButton = {
-                TextButton(onClick = { setPendingDeleteQuest(null) }) { Text("Cancel") }
+                TextButton(
+                    onClick = { setPendingDeleteQuest(null) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Gray,
+                        contentColor = Color.White
+                    )
+                ) { Text("Cancel") }
             }
         )
     }
-
     // Bottom Sheet
     selectedQuest?.let { quest ->
         ModalBottomSheet(
