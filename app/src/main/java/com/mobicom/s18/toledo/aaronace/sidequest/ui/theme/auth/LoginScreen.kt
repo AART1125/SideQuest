@@ -152,7 +152,7 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 enabled = !uiState.isLoading,
-                placeholder = { Text("000000") },
+                placeholder = { Text("XXXXXX") },
                 label = { Text("OTP Code") }
             )
             Spacer(modifier = Modifier.height(24.dp))

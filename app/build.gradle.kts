@@ -78,4 +78,7 @@ dependencies {
 
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // For notifications
+    implementation("androidx.core:core-ktx:1.12.0")
 }

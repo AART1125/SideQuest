@@ -407,10 +407,23 @@ class AuthViewModel : ViewModel() {
 
     fun logout(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            auth.signOut()
-            _uiState.value = AuthUiState()
-            onSuccess()
+            try {
+                auth.signOut()
+                // Clear all state
+                _uiState.value = AuthUiState() // Reset to initial state
+                onSuccess()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Logout failed: ${e.message}"
+                )
+            }
         }
+    }
+
+    fun checkAuthState(): Boolean {
+        val isLoggedIn = auth.currentUser != null
+        _uiState.value = _uiState.value.copy(isLoggedIn = isLoggedIn)
+        return isLoggedIn
     }
 
     fun clearMessages() {

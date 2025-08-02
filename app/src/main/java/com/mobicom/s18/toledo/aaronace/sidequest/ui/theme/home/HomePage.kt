@@ -1,8 +1,10 @@
 package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home
 
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,69 +21,63 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
-import com.mobicom.s18.toledo.aaronace.sidequest.model.toDateString
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
+import com.mobicom.s18.toledo.aaronace.sidequest.utils.toDateString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import kotlin.time.Duration.Companion.seconds
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import androidx.compose.material3.SwipeToDismissBoxState
-import androidx.compose.runtime.mutableStateMapOf
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(viewModel: HomeViewModel = viewModel()) {
+fun HomePage(
+    viewModel: HomeViewModel = viewModel(),
+    onNavigateToQuestLocation: (Double, Double) -> Unit = { _, _ -> }
+) {
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    //val quests by viewModel.quests.collectAsState()
     val quests by viewModel.questsState
     val isLoading by viewModel.isLoading
     val selectedQuest by viewModel.selectedQuest
@@ -131,13 +127,6 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
                     color = Color(0xFF40916C)
                 )
             }
-            /*Icon(
-                painter = painterResource(R.drawable.filter),
-                contentDescription = "Filter",
-                tint = Color.Black,
-                modifier = Modifier
-                    .size(24.dp)
-            )*/
         }
 
         // Active and Completed quests tabs
@@ -282,6 +271,7 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
             }
         )
     }
+
     // Bottom Sheet
     selectedQuest?.let { quest ->
         ModalBottomSheet(
@@ -291,7 +281,13 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
             // Sheet content
             QuestBottomSheet(
                 quest = quest,
-                onComplete = { viewModel.completeQuest(quest) }
+                onComplete = { viewModel.completeQuest(quest) },
+                onNavigateToLocation = {
+                    if (quest.latitude != 0.0 && quest.longitude != 0.0) {
+                        onNavigateToQuestLocation(quest.latitude, quest.longitude)
+                        viewModel.selectQuest(null)
+                    }
+                }
             )
         }
     }
@@ -324,6 +320,7 @@ fun QuestCard(
                     .width(4.dp)
                     .fillMaxHeight()
                     // Adjust color bar based on completion status
+                    // Active - yellow, Completed - green
                     .background(
                         if (quest.completed) Color(0xFF40916C) else Color(0xFFF9A620)
                     )
@@ -332,6 +329,7 @@ fun QuestCard(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
+                // Quest title
                 Text(
                     text = quest.title,
                     fontFamily = fontFamily,
@@ -343,6 +341,8 @@ fun QuestCard(
                     modifier = Modifier
                         .padding(top = 4.dp)
                 ){
+
+                    // Location icon and text
                     Icon(
                         painter = painterResource(R.drawable.location),
                         contentDescription = null,
@@ -361,6 +361,7 @@ fun QuestCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+                // Quest details
                 Text(
                     text = quest.details,
                     fontFamily = fontFamily,
@@ -381,7 +382,8 @@ fun QuestCard(
 @Composable
 fun QuestBottomSheet(
     quest: QuestModel,
-    onComplete: () -> Unit
+    onComplete: () -> Unit,
+    onNavigateToLocation: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -389,34 +391,63 @@ fun QuestBottomSheet(
             .padding(16.dp)
             .fillMaxHeight(0.5f)
     ) {
+        // Title
         Text(
             text = quest.title,
             fontFamily = fontFamily,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        Row(
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Location
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .clickable { onNavigateToLocation() }
         ) {
-            Icon(
-                painter = painterResource(R.drawable.location),
-                contentDescription = null,
-                tint = Color(0xFF40916C),
-                modifier = Modifier
-                    .size(16.dp)
-                    .padding(end = 4.dp)
-            )
-            Text(
-                text = quest.location,
-                fontFamily = fontFamily,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF71727A),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.location),
+                    contentDescription = null,
+                    tint = Color(0xFF40916C),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = quest.location,
+                        fontFamily = fontFamily,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF71727A)
+                    )
+                }
+
+            }
+
+            if(!quest.completed) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "View on map",
+                        fontFamily = fontFamily,
+                        fontSize = 12.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = Color(0xFF40916C),
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Details
         Text(
             text = quest.details,
             fontFamily = fontFamily,
@@ -450,10 +481,7 @@ fun QuestBottomSheet(
                 )
             }
         }
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-        )
+        Spacer(modifier = Modifier.weight(1f))
 
         // Show complete button only if quest is not completed
         if (!quest.completed) {
