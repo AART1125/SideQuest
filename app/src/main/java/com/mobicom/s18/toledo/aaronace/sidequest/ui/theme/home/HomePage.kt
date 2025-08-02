@@ -71,6 +71,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.runtime.mutableStateMapOf
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +96,9 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
     // State for confirmation and undo
     val (pendingDeleteQuest, setPendingDeleteQuest) = remember { mutableStateOf<QuestModel?>(null) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    // Map to hold swipe states for each quest
+    val swipeStates = remember { mutableStateMapOf<String, SwipeToDismissBoxState>() }
 
     Column(
         modifier = Modifier
@@ -208,11 +213,26 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
                         items = currentTabQuests,
                         key = { it.id }
                     ) { quest ->
+                        // Get or create the swipe state for this quest
+                        val swipeState = swipeStates.getOrPut(quest.id) {
+                            rememberSwipeToDismissBoxState(
+                                confirmValueChange = { state ->
+                                    if (state == SwipeToDismissBoxValue.EndToStart) {
+                                        coroutineScope.launch {
+                                            delay(0.5.seconds)
+                                            setPendingDeleteQuest(quest)
+                                        }
+                                        true
+                                    } else false
+                                }
+                            )
+                        }
                         SwipeToDelete(
                             quest = quest,
-                            onRemove = {setPendingDeleteQuest(quest)},
+                            onRemove = { setPendingDeleteQuest(quest) },
                             modifier = Modifier.animateItem(tween(200)),
-                            onClick = { viewModel.selectQuest(quest)}
+                            onClick = { viewModel.selectQuest(quest) },
+                            swipeToDeleteState = swipeState
                         )
                         Spacer(modifier = Modifier.size(16.dp))
                     }
@@ -237,6 +257,7 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
                         setPendingDeleteQuest(null)
                         viewModel.deleteQuest(quest)
                         Toast.makeText(context, "Quest deleted", Toast.LENGTH_SHORT).show()
+                        swipeStates.remove(quest.id)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF509A72),
@@ -246,7 +267,13 @@ fun HomePage(viewModel: HomeViewModel = viewModel()) {
             },
             dismissButton = {
                 TextButton(
-                    onClick = { setPendingDeleteQuest(null) },
+                    onClick = {
+                        setPendingDeleteQuest(null)
+                        coroutineScope.launch {
+                            swipeStates[quest.id]?.reset()
+                            swipeStates.remove(quest.id)
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Gray,
                         contentColor = Color.White
@@ -456,23 +483,9 @@ fun SwipeToDelete(
     quest: QuestModel,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    swipeToDeleteState: SwipeToDismissBoxState
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val swipeToDeleteState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { state ->
-            if(state == SwipeToDismissBoxValue.EndToStart) {
-                coroutineScope.launch {
-                    delay(0.5.seconds)
-                    onRemove()
-                }
-                true
-            } else {
-                false
-            }
-        }
-    )
-
     SwipeToDismissBox(
         state = swipeToDeleteState,
         backgroundContent = {
