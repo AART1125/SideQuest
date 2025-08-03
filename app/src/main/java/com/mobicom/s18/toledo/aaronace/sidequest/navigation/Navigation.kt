@@ -14,9 +14,11 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.LoginScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.SignupScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.main.MainScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfileViewModel
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
+fun AppNavigation(authViewModel: AuthViewModel = viewModel(),
+                  profileViewModel: ProfileViewModel = viewModel()) {
     val navController = rememberNavController()
     val uiState by authViewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -79,7 +81,7 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
             )
         }
         composable("main") {
-            MainScreen(authViewModel = authViewModel)
+            MainScreen(profileViewModel = profileViewModel, authViewModel = authViewModel)
         }
     }
 }

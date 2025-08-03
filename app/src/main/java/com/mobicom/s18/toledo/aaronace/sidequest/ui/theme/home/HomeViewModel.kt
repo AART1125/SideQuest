@@ -1,5 +1,6 @@
 package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,8 @@ class HomeViewModel (
 
     // Get logged-in user ID
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+
 
     private val _isLoading = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
@@ -44,6 +47,7 @@ class HomeViewModel (
     }
 
     fun getActiveQuests(): List<QuestModel> {
+        Log.d("HomeViewModel", "Current User ID: $currentUserId")
         return quests.value.filter { !it.completed }
     }
 

@@ -1,6 +1,7 @@
 package com.mobicom.s18.toledo.aaronace.sidequest.data
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
@@ -62,6 +63,9 @@ class QuestRepository {
                     )
                     .await()
 
+                firestore.collection("users")
+                    .document(userId)
+                    .update("totalCompletedQuests", FieldValue.increment(1))
 
                 Result.success(Unit)
             } else {

@@ -36,6 +36,7 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier,
+               profileViewModel : ProfileViewModel = viewModel(),
                authViewModel : AuthViewModel = viewModel()) {
 
     val navItemList = listOf(
@@ -113,6 +114,7 @@ fun MainScreen(modifier: Modifier = Modifier,
             selectedIndex = selectedIndex,
             showCreateQuestSheet = showCreateQuestSheet,
             onDismissCreateQuest = { showCreateQuestSheet = false },
+            profileViewModel = profileViewModel,
             authViewModel = authViewModel
         )
     }
@@ -124,7 +126,8 @@ fun ContentScreen(
     selectedIndex: Int,
     showCreateQuestSheet: Boolean,
     onDismissCreateQuest: () -> Unit,
-    authViewModel : AuthViewModel = viewModel()
+    authViewModel : AuthViewModel = viewModel(),
+    profileViewModel : ProfileViewModel = viewModel()
 ) {
     when(selectedIndex) {
         0 -> {
@@ -145,6 +148,7 @@ fun ContentScreen(
         }
         2 -> {
             ProfilePage(
+                profileViewModel = profileViewModel,
                 authViewModel = authViewModel
             )
         }
