@@ -20,12 +20,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfileViewModel
 
 @Composable
-fun RankUpScreen (onConfirm: () -> Unit) {
+fun RankUpScreen (
+    onConfirm: () -> Unit,
+    profileViewModel: ProfileViewModel = viewModel()) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -43,7 +48,7 @@ fun RankUpScreen (onConfirm: () -> Unit) {
                 modifier = Modifier.padding(top = 75.dp, start = 20.dp)
             ){
                 Row {
-                    Text("You are now an...",
+                    Text("You are now a...",
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
                         fontSize = 30.sp,
@@ -51,7 +56,7 @@ fun RankUpScreen (onConfirm: () -> Unit) {
                 }
 
                 Row {
-                    Text("Intern!",
+                    Text("${profileViewModel.userRank.value as String}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 34.sp,
                         color = Color(0xFF3A8B74),

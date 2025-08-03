@@ -59,10 +59,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.utils.toDateString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -289,6 +291,14 @@ fun HomePage(
                     }
                 }
             )
+        }
+    }
+
+    if (viewModel.showRankUp) {
+        Dialog(onDismissRequest = { viewModel.closeRankUpPopup() }) {
+            RankUpScreen(onConfirm = {
+                viewModel.closeRankUpPopup()
+            })
         }
     }
 }

@@ -2,11 +2,14 @@ package com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.mobicom.s18.toledo.aaronace.sidequest.data.QuestRepository
+import com.mobicom.s18.toledo.aaronace.sidequest.data.UserRepository
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
 import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +27,17 @@ class HomeViewModel (
 
     private val _isLoading = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
+
+    var showRankUp by mutableStateOf(false)
+        private set
+
+    fun triggerRankUpPopup() {
+        showRankUp = true
+    }
+
+    fun closeRankUpPopup() {
+        showRankUp = false
+    }
 
     val quests: StateFlow<List<QuestModel>> = questRepository.getUserQuests(currentUserId)
         .onEach { _isLoading.value = false }
@@ -77,7 +91,13 @@ class HomeViewModel (
     fun completeQuest(quest: QuestModel) {
         viewModelScope.launch {
             questRepository.completeQuest(quest.id, currentUserId)
-            _selectedQuest.value = null
+            UserRepository().getUserData(currentUserId)
+                .collect {
+                    if (it?.totalCompletedQuests == 5 || it?.totalCompletedQuests == 10 || it?.totalCompletedQuests == 20 || it?.totalCompletedQuests == 50) {
+                        triggerRankUpPopup()
+                        _selectedQuest.value = null
+                    }
+                }
         }
     }
 
