@@ -40,8 +40,18 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map.MapViewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 import com.mobicom.s18.toledo.aaronace.sidequest.tracking.LocationQuestManager
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfileViewModel
 import org.osmdroid.util.GeoPoint
 
+var showRankUp by mutableStateOf(false)
+
+fun triggerRankUpPopup() {
+    showRankUp = true
+}
+
+fun closeRankUpPopup() {
+    showRankUp = false
+}
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(
@@ -123,7 +133,7 @@ fun MainScreen(
             .fillMaxSize(),
         containerColor = Color.White,
         floatingActionButton = {
-            if (selectedIndex == 0) {
+            if (selectedIndex == 0 && !showRankUp) {
                 FloatingActionButton(
                     onClick = { handleCreateQuestClick() },
                     containerColor = Color(0xFF40916C),
@@ -203,27 +213,33 @@ fun ContentScreen(
     mapViewModel: MapViewModel,
     locationQuestManager: LocationQuestManager
 ) {
+
+
     when(selectedIndex) {
         0 -> {
             val viewModel: HomeViewModel = viewModel()
-            HomePage(
-                viewModel = viewModel,
-                onNavigateToQuestLocation = onNavigateToQuestLocation
-            )
-        }
-        1 -> {
-            var showRankUp by remember { mutableStateOf(false) }
-            if (showRankUp) {
-                RankUpScreen(onConfirm = { showRankUp = false })
-            } else {
-                MapPage(
-                    onShowRankUp = { showRankUp = true },
-                    showCreateQuestSheet = showCreateQuestSheet,
-                    onDismissCreateQuest = onDismissCreateQuestSheet,
-                    targetQuestLocation = targetQuestLocation,
-                    viewModel = mapViewModel
+            val profileViewModel: ProfileViewModel = viewModel()
+            if (showRankUp){
+                RankUpScreen(
+                    onConfirm = ::closeRankUpPopup,
+                    profileViewModel = profileViewModel
+                )
+            } else{
+                HomePage(
+                    showRankUp = showRankUp,
+                    triggerRankUpPopup = ::triggerRankUpPopup,
+                    viewModel = viewModel,
+                    onNavigateToQuestLocation = onNavigateToQuestLocation
                 )
             }
+        }
+        1 -> {
+            MapPage(
+                showCreateQuestSheet = showCreateQuestSheet,
+                onDismissCreateQuest = onDismissCreateQuestSheet,
+                targetQuestLocation = targetQuestLocation,
+                viewModel = mapViewModel
+            )
         }
         2 -> ProfilePage(onLogout = onLogout)
     }

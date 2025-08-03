@@ -20,7 +20,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +30,8 @@ import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfileViewMod
 fun RankUpScreen (
     onConfirm: () -> Unit,
     profileViewModel: ProfileViewModel = viewModel()) {
+    val rank = profileViewModel.userRank.value
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -45,7 +46,7 @@ fun RankUpScreen (
             modifier = Modifier.fillMaxSize()
         ) {
             Column(
-                modifier = Modifier.padding(top = 75.dp, start = 20.dp)
+                modifier = Modifier.padding(top = 75.dp, start = 40.dp)
             ){
                 Row {
                     Text("You are now a...",
@@ -56,7 +57,7 @@ fun RankUpScreen (
                 }
 
                 Row {
-                    Text("${profileViewModel.userRank.value as String}",
+                    Text("${rank as String}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 34.sp,
                         color = Color(0xFF3A8B74),
@@ -64,8 +65,16 @@ fun RankUpScreen (
                 }
             }
 
+            val imageRes = when (rank){
+                "Roamer" -> R.drawable.static_roamer
+                "Ranger" -> R.drawable.static_ranger
+                "Voyager" -> R.drawable.static_voyager
+                "Pilot" -> R.drawable.static_pilot
+                else -> R.drawable.static_roamer
+            }
+
             Image(
-                painter = painterResource(R.drawable.static_rank_up),
+                painter = painterResource(imageRes),
                 contentDescription = null,
                 modifier = Modifier
                     .size(400.dp)
@@ -81,7 +90,7 @@ fun RankUpScreen (
                 .align(Alignment.BottomCenter)
                 .offset(y = -(100).dp)
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(start = 40.dp, end = 40.dp, bottom = 15.dp, top = 8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF3A8B74)
             )

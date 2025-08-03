@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.ui.draw.scale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
@@ -59,14 +60,24 @@ fun ProfilePage(
             modifier = Modifier.matchParentSize()
         )
 
+        val imageRes = when {
+            completedQuests < 5 -> R.drawable.profile_character
+            completedQuests in 5..9 -> R.drawable.profile_roamer
+            completedQuests in 10..19 -> R.drawable.profile_ranger
+            completedQuests in 20..49 -> R.drawable.profile_voyager
+            else -> R.drawable.profile_pilot // Add more cases as needed
+        }
+
         Image(
-            painter = painterResource(R.drawable.profile_character),
+            painter = painterResource(imageRes),
             contentDescription = "Sample Character",
             modifier = Modifier
                 .size(400.dp)
+                .scale(1.2f)
                 .align(Alignment.Center)
                 .offset(y = -(90).dp)
         )
+
 
         TextButton(
             modifier = Modifier

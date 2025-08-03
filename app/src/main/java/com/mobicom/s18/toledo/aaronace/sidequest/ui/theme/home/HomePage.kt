@@ -74,6 +74,8 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
+    showRankUp : Boolean,
+    triggerRankUpPopup : () -> Unit,
     viewModel: HomeViewModel = viewModel(),
     onNavigateToQuestLocation: (Double, Double) -> Unit = { _, _ -> }
 ) {
@@ -283,7 +285,7 @@ fun HomePage(
             // Sheet content
             QuestBottomSheet(
                 quest = quest,
-                onComplete = { viewModel.completeQuest(quest) },
+                onComplete = { viewModel.completeQuest(quest, triggerRankUpPopup) },
                 onNavigateToLocation = {
                     if (quest.latitude != 0.0 && quest.longitude != 0.0) {
                         onNavigateToQuestLocation(quest.latitude, quest.longitude)
@@ -291,14 +293,6 @@ fun HomePage(
                     }
                 }
             )
-        }
-    }
-
-    if (viewModel.showRankUp) {
-        Dialog(onDismissRequest = { viewModel.closeRankUpPopup() }) {
-            RankUpScreen(onConfirm = {
-                viewModel.closeRankUpPopup()
-            })
         }
     }
 }

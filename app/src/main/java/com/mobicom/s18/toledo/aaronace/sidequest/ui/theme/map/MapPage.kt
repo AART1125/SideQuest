@@ -813,7 +813,6 @@ fun QuestCreationForm(
 @Composable
 fun MapPage(
     modifier: Modifier = Modifier,
-    onShowRankUp: () -> Unit,
     showCreateQuestSheet: Boolean = false,
     onDismissCreateQuest: () -> Unit = {},
     targetQuestLocation: GeoPoint? = null,

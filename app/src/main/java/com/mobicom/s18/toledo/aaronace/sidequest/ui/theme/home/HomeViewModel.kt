@@ -28,16 +28,6 @@ class HomeViewModel (
     private val _isLoading = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
 
-    var showRankUp by mutableStateOf(false)
-        private set
-
-    fun triggerRankUpPopup() {
-        showRankUp = true
-    }
-
-    fun closeRankUpPopup() {
-        showRankUp = false
-    }
 
     val quests: StateFlow<List<QuestModel>> = questRepository.getUserQuests(currentUserId)
         .onEach { _isLoading.value = false }
@@ -88,7 +78,7 @@ class HomeViewModel (
         }
     }
 
-    fun completeQuest(quest: QuestModel) {
+    fun completeQuest(quest: QuestModel, triggerRankUpPopup: () -> Unit) {
         viewModelScope.launch {
             questRepository.completeQuest(quest.id, currentUserId)
             UserRepository().getUserData(currentUserId)
