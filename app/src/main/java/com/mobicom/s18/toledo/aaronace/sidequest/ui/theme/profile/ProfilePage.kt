@@ -40,7 +40,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
 
-@Preview
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
@@ -61,23 +60,22 @@ fun ProfilePage(
         )
 
         val imageRes = when {
-            completedQuests < 5 -> R.drawable.profile_character
+            completedQuests < 5 -> R.drawable.profile_newbie
             completedQuests in 5..9 -> R.drawable.profile_roamer
             completedQuests in 10..19 -> R.drawable.profile_ranger
             completedQuests in 20..49 -> R.drawable.profile_voyager
-            else -> R.drawable.profile_pilot // Add more cases as needed
+            else -> R.drawable.profile_pilot
         }
 
         Image(
             painter = painterResource(imageRes),
             contentDescription = "Sample Character",
             modifier = Modifier
-                .size(400.dp)
-                .scale(1.2f)
-                .align(Alignment.Center)
-                .offset(y = -(90).dp)
+                .size( if (imageRes == R.drawable.profile_pilot) 600.dp else 400.dp)
+                .offset(x = if (imageRes == R.drawable.profile_pilot) (-28).dp else 0.dp)
+                .align(Alignment.TopCenter)
+                .padding(top = 48.dp)
         )
-
 
         TextButton(
             modifier = Modifier
@@ -131,7 +129,6 @@ fun ProfilePage(
             )
         }
 
-
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -141,32 +138,35 @@ fun ProfilePage(
             Column(
                 modifier = Modifier
             ) {
+                // Username
                 Text("$username", // change to "username"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = 10.dp),
+                        .padding(top = 16.dp),
                     fontFamily = fontFamily,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF52B788)
                 )
-                Spacer(
-                    modifier = Modifier
-                    .height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // User Rank
                 Text("$userRank", // change to "userRank"
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontFamily = fontFamily,
-                    fontSize = 20.sp)
-                Spacer(
-                    modifier = Modifier
-                        .height(8.dp))
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF71727A)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
                 HorizontalDivider(
                     modifier = Modifier
                         .padding(10.dp)
                         .align(Alignment.CenterHorizontally))
-                Spacer(
-                    modifier = Modifier
-                        .height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Completed Quests
                 Text("$completedQuests", // change to "$completedQuests"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
@@ -178,10 +178,11 @@ fun ProfilePage(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     fontFamily = fontFamily,
-                    fontSize = 20.sp)
-                Spacer(
-                    modifier = Modifier
-                        .height(160.dp)
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = Color(0xFF71727A)
+                )
+                Spacer(modifier = Modifier.height(160.dp)
                 )
             }
         }

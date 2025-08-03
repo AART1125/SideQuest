@@ -20,7 +20,7 @@ class ProfileViewModel : ViewModel() {
     private val _username = mutableStateOf("User")
     val username: State<String> = _username
 
-    private val _userRank = mutableStateOf("Novice")
+    private val _userRank = mutableStateOf("Newbie")
     val userRank: State<String> = _userRank
 
     private val _completedQuests= mutableStateOf(0)
@@ -37,7 +37,11 @@ class ProfileViewModel : ViewModel() {
                         _username.value = "Error loading username"
                     }
                     .collect { user ->
-                        if (user?.totalCompletedQuests == 5 || user?.totalCompletedQuests == 10 || user?.totalCompletedQuests == 20 || user?.totalCompletedQuests == 50 ){
+                        if (user?.totalCompletedQuests == 0
+                            || user?.totalCompletedQuests == 5
+                            || user?.totalCompletedQuests == 10
+                            || user?.totalCompletedQuests == 20
+                            || user?.totalCompletedQuests == 50 ){
                             user.calculateRank()
                             UserRepository().updateUserData(currentUser, user)
                         }

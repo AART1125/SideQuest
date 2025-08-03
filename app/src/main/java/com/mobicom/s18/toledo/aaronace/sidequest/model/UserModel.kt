@@ -8,9 +8,9 @@ data class UserModel(
     val username: String = "",
     val phoneNumber: String = "",
     val totalCompletedQuests: Int = 0,
-    var rank: String = "Novice"
+    var rank: String = "Newbie"
 ) {
-    constructor() : this("", "", "", 0, "Novice")
+    constructor() : this("", "", "", 0, "Newbie")
 
     fun calculateRank() {
         when {
