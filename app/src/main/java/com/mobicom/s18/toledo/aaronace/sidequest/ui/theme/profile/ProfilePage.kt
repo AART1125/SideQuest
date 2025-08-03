@@ -45,7 +45,6 @@ fun ProfilePage(
     viewModel: ProfileViewModel = viewModel(),
     onLogout: () -> Unit
 ) {
-
     val username by viewModel.username
     val userRank by viewModel.userRank
     val completedQuests by viewModel.completedQuests
@@ -130,7 +129,7 @@ fun ProfilePage(
             Column(
                 modifier = Modifier
             ) {
-                Text("Aaron Ace Toledo", // change to "username"
+                Text("$username", // change to "username"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 10.dp),
@@ -140,7 +139,7 @@ fun ProfilePage(
                 Spacer(
                     modifier = Modifier
                     .height(16.dp))
-                Text("Project Manager", // change to "userRank"
+                Text("$userRank", // change to "userRank"
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontSize = 20.sp)
                 Spacer(
@@ -153,7 +152,7 @@ fun ProfilePage(
                 Spacer(
                     modifier = Modifier
                         .height(16.dp))
-                Text("50", // change to "$completedQuests"
+                Text("$completedQuests", // change to "$completedQuests"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     fontSize = 100.sp,

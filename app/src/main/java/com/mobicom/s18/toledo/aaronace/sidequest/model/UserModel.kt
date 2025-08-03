@@ -8,17 +8,17 @@ data class UserModel(
     val username: String = "",
     val phoneNumber: String = "",
     val totalCompletedQuests: Int = 0,
-    val rank: String = "Novice"
+    var rank: String = "Novice"
 ) {
     constructor() : this("", "", "", 0, "Novice")
 
-    fun calculateRank(): String {
-        return when {
-            totalCompletedQuests >= 50 -> "Pilot"
-            totalCompletedQuests >= 20 -> "Voyager"
-            totalCompletedQuests >= 10 -> "Ranger"
-            totalCompletedQuests >= 5 -> "Roamer"
-            else -> "Newbie"
+    fun calculateRank() {
+        when {
+            totalCompletedQuests >= 50 -> rank = "Pilot"
+            totalCompletedQuests >= 20 -> rank = "Voyager"
+            totalCompletedQuests >= 10 -> rank = "Ranger"
+            totalCompletedQuests >= 5 -> rank = "Roamer"
+            else -> rank = "Newbie"
         }
     }
 }
