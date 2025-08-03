@@ -9,6 +9,8 @@ import com.mobicom.s18.toledo.aaronace.sidequest.data.QuestRepository
 import com.mobicom.s18.toledo.aaronace.sidequest.data.GeocodingService
 import com.mobicom.s18.toledo.aaronace.sidequest.data.GeocodingResult
 import com.mobicom.s18.toledo.aaronace.sidequest.model.QuestModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -52,6 +54,11 @@ class MapViewModel : ViewModel() {
     // Search states
     private val _searchQuery = mutableStateOf("")
     val searchQuery: State<String> = _searchQuery
+
+    private val _isSearching = mutableStateOf(false)
+    val isSearching: State<Boolean> = _isSearching
+
+    private var searchJob: Job? = null
 
     private val _searchResults = mutableStateOf<List<GeocodingResult>>(emptyList())
     val searchResults: State<List<GeocodingResult>> = _searchResults
@@ -103,17 +110,41 @@ class MapViewModel : ViewModel() {
     // Functions
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+
+        searchJob?.cancel()
+
         if (query.length > 2) {
-            searchLocations(query)
+            _isSearching.value = true
+
+            searchJob = viewModelScope.launch {
+                delay(500)
+                searchLocations(query.trim())
+            }
         } else {
             _searchResults.value = emptyList()
+            _isSearching.value = false
         }
     }
 
-    private fun searchLocations(query: String) {
-        viewModelScope.launch {
+    private suspend fun searchLocations(query: String) {
+        if (query != _searchQuery.value.trim()) {
+            _isSearching.value = false
+            return
+        }
+
+        try {
+            _isSearching.value = true
             val results = geocodingService.forwardGeocode(query)
-            _searchResults.value = results
+
+            if (query == _searchQuery.value.trim()) {
+                _searchResults.value = results
+                _isSearching.value = false
+            }
+        } catch (e: Exception) {
+            if (query == _searchQuery.value.trim()) {
+                _searchResults.value = emptyList()
+                _isSearching.value = false
+            }
         }
     }
 
@@ -161,7 +192,7 @@ class MapViewModel : ViewModel() {
             val quest = QuestModel(
                 title = _newQuestTitle.value,
                 details = _newQuestDetails.value,
-                location = locationResult.displayName,
+                location = locationResult.shortName,
                 latitude = locationResult.latitude,
                 longitude = locationResult.longitude,
                 userId = currentUserId

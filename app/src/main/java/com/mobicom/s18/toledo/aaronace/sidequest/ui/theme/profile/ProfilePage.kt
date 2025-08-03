@@ -37,6 +37,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.fontFamily
 
 @Preview
 @Composable
@@ -73,7 +74,7 @@ fun ProfilePage(
                 .offset(y = 20.dp),
             colors = ButtonDefaults.textButtonColors(
                 containerColor = Color.Transparent,
-                contentColor = Color.White // Change as needed
+                contentColor = Color.White
             ),
             onClick = { showLogoutDialog = true }
         ) {
@@ -133,7 +134,9 @@ fun ProfilePage(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 10.dp),
+                    fontFamily = fontFamily,
                     fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color(0xFF52B788)
                 )
                 Spacer(
@@ -141,6 +144,7 @@ fun ProfilePage(
                     .height(16.dp))
                 Text("$userRank", // change to "userRank"
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = fontFamily,
                     fontSize = 20.sp)
                 Spacer(
                     modifier = Modifier
@@ -155,12 +159,14 @@ fun ProfilePage(
                 Text("$completedQuests", // change to "$completedQuests"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
+                    fontFamily = fontFamily,
                     fontSize = 100.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF52B788))
                 Text("Quests Completed",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
+                    fontFamily = fontFamily,
                     fontSize = 20.sp)
                 Spacer(
                     modifier = Modifier

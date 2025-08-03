@@ -6,6 +6,7 @@ import android.location.Location
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -25,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -255,6 +257,7 @@ fun LocationSearchScreen(
 ) {
     val searchQuery by viewModel.searchQuery
     val searchResults by viewModel.searchResults
+    val isSearching by viewModel.isSearching
 
     Column(
         modifier = modifier
@@ -291,51 +294,95 @@ fun LocationSearchScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Search results
-        if (searchResults.isNotEmpty()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(searchResults) { result ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .clickable { viewModel.selectLocation(result) },
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        when {
+            isSearching -> {
+                // Show loading indicator
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Row(
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color(0xFF40916C)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "Searching...",
+                            color = Color(0xFF71727A),
+                            fontFamily = fontFamily,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            searchResults.isNotEmpty() -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(searchResults) { result ->
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(vertical = 4.dp)
+                                .clickable { viewModel.selectLocation(result) },
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.location),
-                                contentDescription = null,
-                                tint = Color(0xFF40916C),
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = result.displayName,
-                                fontSize = 14.sp,
-                                color = Color.Black
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.location),
+                                    contentDescription = null,
+                                    tint = Color(0xFF40916C),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = result.shortName,
+                                        fontFamily = fontFamily,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.Black
+                                    )
+                                    if (result.shortName != result.displayName) {
+                                        Text(
+                                            text = result.displayName,
+                                            fontFamily = fontFamily,
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF71727A),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        } else if (searchQuery.isNotEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "No results found",
-                    color = Color.Gray,
-                    fontSize = 16.sp
-                )
+
+            searchQuery.length > 2 && !isSearching -> {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "No results found",
+                        color = Color(0xFF71727A),
+                        fontSize = 16.sp,
+                        fontFamily = fontFamily
+                    )
+                }
             }
         }
     }
@@ -439,7 +486,9 @@ fun AvailableQuestsBottomSheet(
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = questLocation.locationName,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                fontFamily = fontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -486,18 +535,31 @@ fun QuestListBottomSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         // Back button
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onBack)
         ) {
-            TextButton(onClick = onBack) {
-                Text("← Back", color = Color(0xFF40916C))
-            }
+            Icon(
+                painter = painterResource(R.drawable.back_icon),
+                contentDescription = null,
+                tint = Color(0xFF40916C)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Back",
+                fontFamily = fontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = Color(0xFF40916C)
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
+        Spacer(modifier = Modifier.padding(8.dp))
 
         // Header
         Text(
@@ -547,6 +609,8 @@ fun QuestDetailsBottomSheet(
             }
             Spacer(modifier = Modifier.weight(1f))
         }
+        Spacer(modifier = Modifier.padding(8.dp))
+
         // Title
         Text(
             text = quest.title,
@@ -560,7 +624,7 @@ fun QuestDetailsBottomSheet(
         // Location
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(R.drawable.location),
@@ -670,7 +734,7 @@ fun QuestCreationForm(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = selectedLocation?.displayName ?: "Select location",
+                        text = selectedLocation?.shortName ?: "Select location",
                         fontFamily = fontFamily,
                         fontSize = 14.sp,
                         color = Color.Black,
@@ -680,7 +744,7 @@ fun QuestCreationForm(
                 }
                 TextButton(onClick = onChangeLocation) {
                     Text(
-                        text = "• Change",
+                        text = "Change",
                         fontFamily = fontFamily,
                         color = Color(0xFF40916C))
                 }
