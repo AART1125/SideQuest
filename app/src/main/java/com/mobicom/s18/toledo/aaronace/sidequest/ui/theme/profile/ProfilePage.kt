@@ -31,17 +31,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.R
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.AuthViewModel
 
 @Preview
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
 ) {
 
-    val username by viewModel.username
-    val userRank by viewModel.userRank
-    val completedQuests by viewModel.completedQuests
+    val username by profileViewModel.username
+    val userRank by profileViewModel.userRank
+    val completedQuests by profileViewModel.completedQuests
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -68,7 +70,7 @@ fun ProfilePage(
                 containerColor = Color.Transparent,
                 contentColor = Color.White // Change as needed
             ),
-            onClick = {  }
+            onClick = {authViewModel.logout({})}
         ) {
 
             Image(
@@ -89,7 +91,7 @@ fun ProfilePage(
             Column(
                 modifier = Modifier
             ) {
-                Text("Aaron Ace Toledo", // change to "username"
+                Text("$username", // change to "username"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 10.dp),
@@ -99,7 +101,7 @@ fun ProfilePage(
                 Spacer(
                     modifier = Modifier
                     .height(16.dp))
-                Text("Project Manager", // change to "userRank"
+                Text("$userRank", // change to "userRank"
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontSize = 20.sp)
                 Spacer(
@@ -112,7 +114,7 @@ fun ProfilePage(
                 Spacer(
                     modifier = Modifier
                         .height(16.dp))
-                Text("50", // change to "$completedQuests"
+                Text("$completedQuests", // change to "$completedQuests"
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally),
                     fontSize = 100.sp,

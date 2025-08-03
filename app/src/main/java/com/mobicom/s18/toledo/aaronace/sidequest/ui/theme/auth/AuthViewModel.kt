@@ -32,7 +32,7 @@ data class AuthUiState(
     val verificationId: String? = null,
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
     val message: String? = null,
-    val isSignup: Boolean = false
+    val isSignup: Boolean = false,
 )
 
 class AuthViewModel : ViewModel() {
@@ -164,6 +164,7 @@ class AuthViewModel : ViewModel() {
                 }
 
                 val credential = PhoneAuthProvider.getCredential(verificationId, otpCode)
+                _uiState.value = _uiState.value.copy(isLoggedIn = true)
                 signInWithCredential(credential, onSuccess)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

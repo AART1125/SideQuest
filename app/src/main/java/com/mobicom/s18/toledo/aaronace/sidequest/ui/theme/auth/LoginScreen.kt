@@ -39,25 +39,31 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun LoginScreen(
     onNavigateToMain: () -> Unit = {},
     onSignupClicked:() -> Unit = {},
-    viewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel()
 ) {
     val questGreen = Color(0xFF509A72)
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     // Toast messages
     LaunchedEffect(uiState.message) {
         uiState.message?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            viewModel.clearMessages()
+            authViewModel.clearMessages()
+        }
+    }
+
+    LaunchedEffect(uiState.isLoggedIn) {
+        if (!uiState.isLoggedIn){
+            authViewModel.logout({})
         }
     }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            viewModel.clearMessages()
+            authViewModel.clearMessages()
         }
     }
 
@@ -81,7 +87,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = uiState.mobileNumber,
-                onValueChange = viewModel::updateMobileNumber,
+                onValueChange = authViewModel::updateMobileNumber,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -116,13 +122,13 @@ fun LoginScreen(
 
             // Send OTP button
             Button(
-                onClick = { viewModel.login(context as androidx.activity.ComponentActivity) },
+                onClick = { authViewModel.login(context as androidx.activity.ComponentActivity) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = questGreen),
-                enabled = viewModel.canLogin() && !uiState.isLoading
+                enabled = authViewModel.canLogin() && !uiState.isLoading
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -146,7 +152,7 @@ fun LoginScreen(
 
             OutlinedTextField(
                 value = uiState.otpCode,
-                onValueChange = viewModel::updateOtpCode,
+                onValueChange = authViewModel::updateOtpCode,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -159,13 +165,13 @@ fun LoginScreen(
 
             // Verify OTP button
             Button(
-                onClick = { viewModel.verifyOtp(onNavigateToMain) },
+                onClick = { authViewModel.verifyOtp(onNavigateToMain) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = questGreen),
-                enabled = viewModel.canVerifyOtp() && !uiState.isLoading
+                enabled = authViewModel.canVerifyOtp() && !uiState.isLoading
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -180,7 +186,7 @@ fun LoginScreen(
 
             // Resend OTP button
             TextButton(
-                onClick = { viewModel.resendOtp(context as androidx.activity.ComponentActivity) },
+                onClick = { authViewModel.resendOtp(context as androidx.activity.ComponentActivity) },
                 enabled = !uiState.isLoading
             ) {
                 Text(

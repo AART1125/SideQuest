@@ -7,7 +7,7 @@ data class UserModel(
     val id: String = "",
     val username: String = "",
     val phoneNumber: String = "",
-    val totalCompletedQuests: Int = 0,
+    var totalCompletedQuests: Int = 0,
     val rank: String = "Novice"
 ) {
     constructor() : this("", "", "", 0, "Novice")
@@ -21,4 +21,10 @@ data class UserModel(
             else -> "Newbie"
         }
     }
+
+    fun incrementCompletedQuests() {
+        totalCompletedQuests++;
+    }
+
+
 }

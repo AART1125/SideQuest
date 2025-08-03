@@ -26,15 +26,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.navigation.NavItem
 import com.mobicom.s18.toledo.aaronace.sidequest.R
-import com.mobicom.s18.toledo.aaronace.sidequest.data.sampleQuests
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.auth.AuthViewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home.HomePage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.home.HomeViewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.map.MapPage
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfilePage
+import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.profile.ProfileViewModel
 import com.mobicom.s18.toledo.aaronace.sidequest.ui.theme.rankup.RankUpScreen
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier,
+               authViewModel : AuthViewModel = viewModel()) {
 
     val navItemList = listOf(
         NavItem("Home", painterResource(R.drawable.home_inactive)),
@@ -110,7 +112,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
             showCreateQuestSheet = showCreateQuestSheet,
-            onDismissCreateQuest = { showCreateQuestSheet = false }
+            onDismissCreateQuest = { showCreateQuestSheet = false },
+            authViewModel = authViewModel
         )
     }
 }
@@ -120,7 +123,8 @@ fun ContentScreen(
     modifier: Modifier = Modifier,
     selectedIndex: Int,
     showCreateQuestSheet: Boolean,
-    onDismissCreateQuest: () -> Unit
+    onDismissCreateQuest: () -> Unit,
+    authViewModel : AuthViewModel = viewModel()
 ) {
     when(selectedIndex) {
         0 -> {
@@ -139,6 +143,10 @@ fun ContentScreen(
                 )
             }
         }
-        2 -> ProfilePage()
+        2 -> {
+            ProfilePage(
+                authViewModel = authViewModel
+            )
+        }
     }
 }
