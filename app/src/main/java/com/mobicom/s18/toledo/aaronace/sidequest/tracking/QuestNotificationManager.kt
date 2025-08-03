@@ -33,7 +33,6 @@ class QuestNotificationManager(private val context: Context) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
-                // Enable vibration and sound
                 enableVibration(true)
                 setShowBadge(true)
             }
@@ -48,14 +47,13 @@ class QuestNotificationManager(private val context: Context) {
         if (!hasNotificationPermission()) return
 
         val questCount = nearbyQuests.size
-        val title = "Quests available in current location"
+        val title = "Time to go on a side quest!"
         val content = when {
             questCount == 1 -> "You have 1 quest available nearby: ${nearbyQuests.first().title}"
             questCount > 1 -> "You have $questCount quests available nearby"
             else -> return
         }
 
-        // Create intent to open the app and navigate to map
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to_map", true)
@@ -69,7 +67,7 @@ class QuestNotificationManager(private val context: Context) {
         )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.location) // Use your location icon
+            .setSmallIcon(R.drawable.location)
             .setContentTitle(title)
             .setContentText(content)
             .setStyle(
@@ -79,7 +77,7 @@ class QuestNotificationManager(private val context: Context) {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setVibrate(longArrayOf(0, 500, 250, 500)) // Custom vibration pattern
+            .setVibrate(longArrayOf(0, 500, 250, 500))
 
         try {
             with(NotificationManagerCompat.from(context)) {
